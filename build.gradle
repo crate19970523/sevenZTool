@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0' // 引入 Shadow 插件
+}
+
+group = 'com.crater'
+version = '1.0-SNAPSHOT'
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.crater.Main'
+    }
+    into('lib') {
+        from 'lib'
+    }
+}
+
+shadowJar {
+    // 配置生成的 "FAT" JAR 的名稱
+    archiveFileName = "7z.jar"
+
+    // 是否包含依賴的 JAR 檔案
+    configurations = [project.configurations.runtimeClasspath]
+
+    // 可以進一步設定排除一些不需要包含的依賴
+    // exclude 'group:name'
+    // exclude 'group:name:version'
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.24.0'
+    implementation group: 'org.tukaani', name: 'xz', version: '1.9'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
