@@ -22,6 +22,7 @@ public class Main {
     private static void addToArchiveCompression(SevenZOutputFile out, File file, String dir) throws IOException {
         var name = dir + File.separator + file.getName();
         if (file.isFile()) {
+            System.out.println("will compress file: " + name);
             var entry = out.createArchiveEntry(file, name);
             out.putArchiveEntry(entry);
 
@@ -52,6 +53,7 @@ public class Main {
             if (entry.isDirectory()) {
                 continue;
             }
+            System.out.println("decompress file: " + entry.getName());
             File curfile = new File(destination, entry.getName());
             File parent = curfile.getParentFile();
             if (!parent.exists()) {
@@ -65,17 +67,28 @@ public class Main {
         }
     }
 
+    public static void readCompress(String sevenZPath) throws IOException {
+        var sevenZFile = new SevenZFile(new File(sevenZPath));
+        SevenZArchiveEntry entry;
+        while ((entry = sevenZFile.getNextEntry()) != null) {
+            System.out.println(entry.getName());
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         try {
             var command = args[0];
             var sevenZPath = args[1];
-            var targetPath = args[2];
             if (command.equals("-c")) {
+                var targetPath = args[2];
                 compress(sevenZPath, new File(targetPath));
             } else if (command.equals("-dc")) {
+                var targetPath = args[2];
                 decompress(sevenZPath, new File(targetPath));
+            } else if (command.equals("-rc")) {
+                readCompress(sevenZPath);
             } else {
-                System.out.println("must -c or -dc");
+                System.out.println("must -c or -dc or -rc");
             }
         } catch (Exception e) {
             e.printStackTrace();
